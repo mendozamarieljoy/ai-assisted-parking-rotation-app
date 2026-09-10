@@ -1,10 +1,8 @@
 import {
   User,
-  users,
   Slot,
   DaySchedule,
   SlotAssignment,
-  UserStats,
 } from "./types";
 import {
   getDaysInMonth,
@@ -17,6 +15,7 @@ import {
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { usersList } from "./constants";
 
 const slots = ["332", "27", "28"] as const;
 
@@ -93,7 +92,7 @@ function getPartialPermutations<T>(arr: T[], size: number): T[][] {
 function evaluateFairnessScore(
   stats: Record<User, { primary: number; backup: number; slot332: number }>,
 ): number {
-  const userValues = users.map(
+  const userValues = usersList.map(
     (user) =>
       stats[user].primary * 2 + stats[user].backup - stats[user].slot332 * 1.5,
   );
@@ -101,9 +100,9 @@ function evaluateFairnessScore(
   const maxValue = Math.max(...userValues);
   const minValue = Math.min(...userValues);
 
-  const primaryCounts = users.map((user) => stats[user].primary);
-  const backupCounts = users.map((user) => stats[user].backup);
-  const slot332Counts = users.map((user) => stats[user].slot332);
+  const primaryCounts = usersList.map((user) => stats[user].primary);
+  const backupCounts = usersList.map((user) => stats[user].backup);
+  const slot332Counts = usersList.map((user) => stats[user].slot332);
 
   const rangePrimary = Math.max(...primaryCounts) - Math.min(...primaryCounts);
   const rangeBackup = Math.max(...backupCounts) - Math.min(...backupCounts);
@@ -129,12 +128,12 @@ export function generateSchedule(year: number, month: number): DaySchedule[] {
     User,
     { primary: number; backup: number; slot332: number }
   >;
-  users.forEach((user) => {
+  usersList.forEach((user) => {
     userStats[user] = { primary: 0, backup: 0, slot332: 0 };
   });
 
   for (const date of days) {
-    const availableUsers = users.filter((user) => isAvailable(user, date));
+    const availableUsers = usersList.filter((user) => isAvailable(user, date));
     if (availableUsers.length < 6) {
       continue;
     }
@@ -272,7 +271,7 @@ export function generateSchedule(year: number, month: number): DaySchedule[] {
             continue;
           }
 
-          const projectedStats = users.reduce(
+          const projectedStats = usersList.reduce(
             (acc, user) => {
               acc[user] = { ...userStats[user] };
               return acc;

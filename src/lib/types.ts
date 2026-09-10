@@ -1,14 +1,6 @@
-export const users = [
-  "Reubs",
-  "Nes",
-  "Mariel",
-  "Raph",
-  "Lady",
-  "Marvs",
-  "Erwin",
-] as const;
+import { usersList } from "./constants";
 
-export type User = (typeof users)[number];
+export type User = (typeof usersList)[number];
 
 export type Slot = "332" | "27" | "28";
 

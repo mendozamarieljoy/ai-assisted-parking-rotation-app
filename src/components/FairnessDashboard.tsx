@@ -1,10 +1,12 @@
 "use client";
 
+import { getUsers } from "@/lib/helper";
 import { useParkingStore } from "@/lib/store";
-import { users } from "@/lib/types";
 
 export default function FairnessDashboard() {
   const { userStats } = useParkingStore();
+
+  const users = getUsers();
 
   const sortedUsers = [...users].sort(
     (a, b) => userStats[b].fairnessScore - userStats[a].fairnessScore,

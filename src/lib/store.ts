@@ -9,7 +9,6 @@ import {
 } from "./types";
 import { generateSchedule } from "./scheduler";
 import { calculateFairnessScore, calculateBenefitScore } from "./utils";
-import { users } from "./types";
 import { usersList } from "./constants";
 
 interface ParkingState {
@@ -34,7 +33,7 @@ function calculateUserStats(
   schedule: DaySchedule[],
 ): Record<string, UserStats> {
   const stats: Record<string, { primary: number; backup: number }> = {};
-  users.forEach((user) => {
+  usersList.forEach((user) => {
     stats[user] = { primary: 0, backup: 0 };
   });
 
@@ -53,7 +52,7 @@ function calculateUserStats(
   });
 
   const userStats: Record<string, UserStats> = {};
-  users.forEach((user) => {
+  usersList.forEach((user) => {
     const s = stats[user];
     userStats[user] = {
       primaryCount: s.primary,
@@ -70,10 +69,10 @@ function calculateCostStats(
   userStats: Record<string, UserStats>,
 ): Record<string, CostStats> {
   const totalSlots = schedule.length * 3;
-  const costPerUser = (totalSlots * COST_PER_SLOT) / users.length;
+  const costPerUser = (totalSlots * COST_PER_SLOT) / usersList.length;
 
   const costStats: Record<string, CostStats> = {};
-  users.forEach((user) => {
+  usersList.forEach((user) => {
     const stats = userStats[user];
     const benefit = calculateBenefitScore(
       stats.primaryCount,

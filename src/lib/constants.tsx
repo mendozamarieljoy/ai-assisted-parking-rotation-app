@@ -8,6 +8,8 @@ export const usersList = [
   "Erwin",
 ];
 
+export const removedUsers = ["Erwin"] // TODO: Remove entirely from codebase
+
 export const primaryUserColor: Record<string, string> = {
   Mariel: "border-pink-500 text-pink-700",
   Raph: "border-amber-500 text-amber-700",

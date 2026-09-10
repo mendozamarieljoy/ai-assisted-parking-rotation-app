@@ -1,10 +1,12 @@
 "use client";
 
+import { getUsers } from "@/lib/helper";
 import { useParkingStore } from "@/lib/store";
-import { users } from "@/lib/types";
 
 export default function CostSimulationPanel() {
   const { costStats } = useParkingStore();
+
+  const users = getUsers();
 
   return (
     <div className="w-full bg-white p-6 rounded-lg shadow-md">
