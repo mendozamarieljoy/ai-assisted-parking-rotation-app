@@ -5,6 +5,7 @@ import { domToPng } from "modern-screenshot";
 import dayjs from "dayjs";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "@/hooks/hooks";
+import Button from "./Utility/Button";
 
 const DownloadIcon = () => (
   <svg
@@ -118,9 +119,10 @@ export default function SchedulerControls() {
   return (
     <div className="relative inline-block text-left">
       {/* Trigger Button */}
-      <button
+
+      <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-md transition-all border border-slate-600"
+        className="flex items-center gap-2"
       >
         <DownloadIcon />
         <span className="hidden md:block font-mono font-medium text-xs uppercase tracking-widest">
@@ -139,7 +141,7 @@ export default function SchedulerControls() {
             d="M19 9l-7 7-7-7"
           />
         </svg>
-      </button>
+      </Button>
 
       {/* Dropdown Menu */}
       {isOpen && (
