@@ -6,6 +6,9 @@ import { DaySchedule, Slot } from "@/lib/types";
 import dayjs from "dayjs";
 import Modal from "@/components/Modal";
 import ParkingSlot from "@/components/ParkingSlot";
+import IconPreviousDate from "@/assets/icons/calendar-prev.svg";
+import IconNextDate from "@/assets/icons/calendar-next.svg";
+import Image from "next/image";
 
 export default function TodaySchedulePage() {
   const { schedule, skipPrimary } = useParkingStore();
@@ -54,32 +57,82 @@ export default function TodaySchedulePage() {
     [schedule],
   );
 
+  const selectedDateIndex = availableDates.indexOf(selectedDate);
+  const date = {
+    toaday: selectedDate,
+    previous:
+      selectedDateIndex > 0 ? availableDates[selectedDateIndex - 1] : undefined,
+    next:
+      selectedDateIndex >= 0 && selectedDateIndex < availableDates.length - 1
+        ? availableDates[selectedDateIndex + 1]
+        : undefined,
+  };
+
   return (
     <>
       <div className="flex flex-col max-w-2xl mx-auto p-6">
-        <h1 className="text-2xl font-black font-mono uppercase mb-4">
-          Schedule Today
-        </h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-black font-mono uppercase">
+            Schedule Today
+          </h1>
+          <h2>{dayjs().format("D MMMM YYYY (dddd)")}</h2>
+        </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <label
-            className="block font-mono font-medium text-gray-700 uppercase text-xs"
-            htmlFor="date"
-          >
-            Select a day
-          </label>
-          <select
-            id="date"
-            className="w-full outline-none py-2 border-b bg-transparent cursor-pointer text-2xl font-black text-zinc-800 uppercase font-mono"
-            value={selectedDate}
-            onChange={(event) => setSelectedDate(event.target.value)}
-          >
-            {availableDates.map((date) => (
-              <option key={date} value={date} className="text-sm">
-                {dayjs(date).format("MMMM D, YYYY (dddd)")}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-x-4">
+            <div className="flex-1">
+              <label
+                className="block font-mono font-medium text-gray-700 uppercase text-xs"
+                htmlFor="date"
+              >
+                Select date
+              </label>
+              <select
+                id="date"
+                className="w-full outline-none py-2 border-b bg-transparent cursor-pointer text-2xl font-black text-zinc-800 uppercase font-mono rounded-none"
+                value={selectedDate}
+                onChange={(event) => setSelectedDate(event.target.value)}
+              >
+                {availableDates.map((date) => (
+                  <option key={date} value={date} className="text-sm">
+                    {dayjs(date).format("D MMMM YYYY (dddd)")}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {selectedDate === dayjs().format("YYYY-MM-DD") ? null : (
+              <button
+                className="mt-4 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-md"
+                onClick={() => setSelectedDate(dayjs().format("YYYY-MM-DD"))}
+              >
+                Today
+              </button>
+            )}
+          </div>
+          <div className="flex justify-between mt-4 gap-x-4">
+            {date.previous && (
+              <button
+                className="mr-auto uppercase text-sm flex items-center gap-x-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md"
+                disabled={!date.previous}
+                onClick={() => date.previous && setSelectedDate(date.previous)}
+              >
+                <Image src={IconPreviousDate} alt="Previous" />
+                <span className="hidden md:inline-block">Previous:</span>
+                {dayjs(date.previous).format("D MMM")}
+              </button>
+            )}
+            {date.next && (
+              <button
+                className="ml-auto uppercase text-sm flex items-center gap-x-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md"
+                disabled={!date.next}
+                onClick={() => date.next && setSelectedDate(date.next)}
+              >
+                <span className="hidden md:inline-block">Next:</span>
+                {dayjs(date.next).format("D MMM")}
+                <Image src={IconNextDate} alt="Next" />
+              </button>
+            )}
+          </div>
         </div>
 
         {scheduleForDate ? (
