@@ -1,22 +1,27 @@
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { parkingConfig } from "@/lib/config";
 
 export default function SwapTimeCalculator() {
-  const [time, setTime] = useState("11:30");
+  const { maxPayParkingHours, suggestedSwapBufferMinutes } =
+    parkingConfig.swapGuidance;
+  const [time, setTime] = useState(
+    parkingConfig.swapGuidance.samplePayParkingArrivalTime,
+  );
 
   const result = useMemo(() => {
     if (!time) return null;
 
     const base = dayjs(`2026-01-01 ${time}`);
-    const deadline = base.add(3, "hour");
-    const suggested = deadline.subtract(10, "minute");
+    const deadline = base.add(maxPayParkingHours, "hour");
+    const suggested = deadline.subtract(suggestedSwapBufferMinutes, "minute");
 
     return {
       base,
       deadline,
       suggested,
     };
-  }, [time]);
+  }, [maxPayParkingHours, suggestedSwapBufferMinutes, time]);
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white px-4 py-3 space-y-4">
@@ -47,14 +52,15 @@ export default function SwapTimeCalculator() {
           </p>
 
           <p>
-            ⏳ +3 Hours Deadline:{" "}
+            ⏳ +{maxPayParkingHours} Hours Deadline:{" "}
             <span className="font-bold text-zinc-800">
               {result.deadline.format("h:mm A")}
             </span>
           </p>
 
           <p>
-            💡 Suggested Swap Time (10 mins before deadline):{" "}
+            💡 Suggested Swap Time ({suggestedSwapBufferMinutes} mins before
+            deadline):{" "}
             <span className="font-bold text-amber-600">
               {result.suggested.format("h:mm A")}
             </span>

@@ -15,7 +15,7 @@ import {
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { usersList } from "./constants";
+import { parkingConfig, usersList } from "./config";
 
 const slots = ["332", "27", "28"] as const;
 
@@ -92,9 +92,12 @@ function getPartialPermutations<T>(arr: T[], size: number): T[][] {
 function evaluateFairnessScore(
   stats: Record<User, { primary: number; backup: number; slot332: number }>,
 ): number {
+  const fairness = parkingConfig.fairness;
   const userValues = usersList.map(
     (user) =>
-      stats[user].primary * 2 + stats[user].backup - stats[user].slot332 * 1.5,
+      stats[user].primary * fairness.primaryWeight +
+      stats[user].backup * fairness.backupWeight -
+      stats[user].slot332 * fairness.slot332Penalty,
   );
 
   const maxValue = Math.max(...userValues);
@@ -110,11 +113,42 @@ function evaluateFairnessScore(
 
   // Weight by how close the composite score is across users first, then by distribution stability.
   return (
-    (maxValue - minValue) * 1000 +
-    rangePrimary * 100 +
-    rangeBackup * 10 +
-    range332
+    (maxValue - minValue) * fairness.compositeRangeWeight +
+    rangePrimary * fairness.primaryRangeWeight +
+    rangeBackup * fairness.backupRangeWeight +
+    range332 * fairness.slot332RangeWeight
   );
+}
+
+function violatesAssignmentRule(
+  slot: Slot,
+  assignedUsers: (User | null)[],
+  date: Date,
+): boolean {
+  return parkingConfig.scheduler.rules.some((rule) => {
+    if (!rule.slots.includes(slot)) return false;
+    if (rule.weekdays && !rule.weekdays.includes(date.getDay())) return false;
+    if (
+      rule.dates &&
+      !rule.dates.some((ruleDate) => dayjs(date).isSame(dayjs(ruleDate)))
+    ) {
+      return false;
+    }
+    if (
+      rule.afterDateExclusive &&
+      !dayjs(date).isAfter(dayjs(rule.afterDateExclusive))
+    ) {
+      return false;
+    }
+    const has = (user: string) =>
+      assignedUsers.some((assignedUser) => assignedUser === user);
+
+    return (
+      rule.forbiddenUsers?.some(has) === true ||
+      rule.forbiddenPairs?.some(([first, second]) => has(first) && has(second)) ===
+        true
+    );
+  });
 }
 
 export function generateSchedule(year: number, month: number): DaySchedule[] {
@@ -140,7 +174,9 @@ export function generateSchedule(year: number, month: number): DaySchedule[] {
 
     dayjs.extend(utc);
     dayjs.extend(timezone);
-    const phtDate = dayjs(date).tz("Asia/Manila").format("YYYY-MM-DD");
+    const phtDate = dayjs(date)
+      .tz(parkingConfig.timezone)
+      .format("YYYY-MM-DD");
 
     const unavailableSlots = unavailableSlotsByDate[phtDate] ?? [];
 
@@ -154,10 +190,16 @@ export function generateSchedule(year: number, month: number): DaySchedule[] {
       score: number;
     } | null = null;
 
-    const candidateGroups = getCombinations(availableUsers, 6);
+    const candidateGroups = getCombinations(
+      availableUsers,
+      slots.length * 2,
+    );
 
     for (const group of candidateGroups) {
-      const primaryOptions = getPartialPermutations(group, 3);
+      const primaryOptions = getPartialPermutations(
+        group,
+        slots.length,
+      );
 
       for (const primarySet of primaryOptions) {
         const remainingForBackup = group.filter(
@@ -167,9 +209,7 @@ export function generateSchedule(year: number, month: number): DaySchedule[] {
 
         for (const backupSet of backupOptions) {
           let invalid = false;
-          const day = date.getDay();
-
-          const daySlots: Record<Slot, SlotAssignment> | null = {
+          const daySlots: Record<Slot, SlotAssignment> = {
             332: { primary: primarySet[0], backup: backupSet[0] },
             27: { primary: primarySet[1], backup: backupSet[1] },
             28: { primary: primarySet[2], backup: backupSet[2] },
@@ -181,87 +221,16 @@ export function generateSchedule(year: number, month: number): DaySchedule[] {
               daySlots[slot] = null;
               continue;
             }
-            const primary = daySlots[slot] ? daySlots[slot].primary : "";
-            const backup = daySlots[slot] ? daySlots[slot].backup : "";
-
-            const assignedUsers = [primary, backup];
-            const has = (name: User) => assignedUsers.includes(name);
+            const primary = daySlots[slot]?.primary ?? null;
+            const backup = daySlots[slot]?.backup ?? null;
 
             if (primary === backup) {
               invalid = true;
               break;
             }
-
-            // AFTERNOON CONSTRAINTS
-            if (has("Nes") && has("Raph")) {
-              invalid = true;
-              break;
-            }
-
-            if (has("Nes") && has("Marvs") && day <= 4) {
-              invalid = true;
-              break;
-            }
-            if (has("Raph") && has("Marvs") && day <= 4) {
-              invalid = true;
-              break;
-            }
-
-            // MORNING CONSTRAINTS
-            if (has("Lady") && has("Reubs")) {
-              invalid = true;
-              break;
-            }
-
-            if (has("Lady") && has("Erwin")) {
-              invalid = true;
-              break;
-            }
-
-            if (has("Reubs") && has("Erwin")) {
-              invalid = true;
-              break;
-            }
-
-            // MORNING + MARVS EVERY FRIDAY CONTRAINS
             if (
-              (has("Lady") || has("Reubs") || has("Erwin")) &&
-              has("Marvs") &&
-              day === 5
+              violatesAssignmentRule(slot, [primary, backup], date)
             ) {
-              invalid = true;
-              break;
-            }
-
-            // MID CONSTRAINTS
-            if (has("Mariel") && has("Reubs")) {
-              invalid = true;
-              break;
-            }
-
-            // MANUAL SCHEDULING
-            // TODO: To be removed by June 2026
-            if (dayjs(date).isAfter(dayjs("2026-05-19")) && has("Erwin")) {
-              invalid = true;
-              break;
-            }
-
-            if (
-              dayjs(date).isAfter(dayjs("2026-05-19")) &&
-              has("Mariel") &&
-              has("Lady")
-            ) {
-              invalid = true;
-              break;
-            }
-
-            if (dayjs(date).isSame(dayjs("2026-05-20")) && has("Reubs")) {
-              invalid = true;
-              break;
-            }
-
-            // KCS FE OUTING
-            if (dayjs(date).isSame(dayjs("2026-05-21")) && has("Nes")) {
               invalid = true;
               break;
             }
@@ -323,9 +292,13 @@ export function generateSchedule(year: number, month: number): DaySchedule[] {
       }
     });
 
-    if (phtDate === "2026-05-22") {
-      assignments["27"] = { primary: "Mariel", backup: null };
-      assignments["28"] = { primary: "Marvs", backup: null };
+    const dateOverride = parkingConfig.scheduler.dateOverrides.find(
+      (override) => override.date === phtDate,
+    );
+    if (dateOverride) {
+      Object.entries(dateOverride.assignments).forEach(([slot, assignment]) => {
+        assignments[slot as Slot] = assignment as SlotAssignment;
+      });
     }
 
     schedule.push({

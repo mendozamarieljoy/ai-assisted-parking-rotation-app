@@ -1,17 +1,18 @@
 import { useMemo, useState } from "react";
+import { parkingConfig } from "@/lib/config";
 
 export default function ParkingFeeCalculator() {
-  const [hours, setHours] = useState<number>(3);
+  const { baseHours, baseFee, extraFeePerHour } = parkingConfig.parkingFee;
+  const [hours, setHours] = useState<number>(baseHours);
 
   const result = useMemo(() => {
     if (!hours || hours <= 0) return 0;
 
-    const baseFee = 50;
-    const extraHours = Math.max(0, hours - 3);
-    const extraFee = extraHours * 20;
+    const extraHours = Math.max(0, hours - baseHours);
+    const extraFee = extraHours * extraFeePerHour;
 
     return baseFee + extraFee;
-  }, [hours]);
+  }, [baseFee, baseHours, extraFeePerHour, hours]);
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white px-4 py-3 space-y-3">
@@ -26,7 +27,7 @@ export default function ParkingFeeCalculator() {
         <div className="flex items-center gap-2">
           <input
             type="number"
-            min={3}
+            min={baseHours}
             step={1}
             value={hours}
             onChange={(e) => setHours(Number(e.target.value))}
@@ -39,12 +40,15 @@ export default function ParkingFeeCalculator() {
 
       <div className="space-y-1 text-zinc-600 mt-4">
         <div className="flex justify-between items-center">
-          <p>Base (first 3 hours)</p>
-          <p>₱50</p>
+          <p>Base (first {baseHours} hours)</p>
+          <p>₱{baseFee}</p>
         </div>
         <div className="flex justify-between items-center">
-          <p>Extra hours({Math.max(0, hours - 3)} hr × ₱20)</p>
-          <p>₱{Math.max(0, hours - 3) * 20}</p>
+          <p>
+            Extra hours({Math.max(0, hours - baseHours)} hr × ₱{extraFeePerHour}
+            )
+          </p>
+          <p>₱{Math.max(0, hours - baseHours) * extraFeePerHour}</p>
         </div>
         <div className="flex justify-between items-center font-bold border-t border-zinc-800 pt-2 mt-2">
           <p>Total Fee</p>

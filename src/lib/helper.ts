@@ -1,5 +1,5 @@
-import { removedUsers, usersList } from "./constants";
+import { parkingConfig, usersList } from "./config";
 
 export const getUsers = () => {
-    return usersList.filter((user: string) => !removedUsers.includes(user));
+    return usersList.filter((user) => parkingConfig.users[user].showInFilter);
 }

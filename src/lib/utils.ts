@@ -1,4 +1,4 @@
-import { holidays, usersList } from "./constants";
+import { parkingConfig } from "./config";
 import { User } from "./types";
 
 export function getDaysInMonth(year: number, month: number): Date[] {
@@ -12,40 +12,40 @@ export function getDaysInMonth(year: number, month: number): Date[] {
 }
 
 export function isAvailable(user: User, date: Date): boolean {
-  const day = date.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-  switch (user) {
-    case "Reubs":
-      return day !== 2; // no Tuesday
-    case "Mariel":
-      return day !== 5; // no Friday
-    case "Nes":
-      return day !== 3; // no Wednesday
-    default:
-      return true;
-  }
+  return !parkingConfig.users[user].unavailableWeekdays.includes(
+    date.getDay(),
+  );
 }
 
 export function calculateFairnessScore(stats: {
   primary: number;
   backup: number;
 }): number {
-  return stats.primary * 2 + stats.backup * 1;
+  return (
+    stats.primary * parkingConfig.fairness.primaryWeight +
+    stats.backup * parkingConfig.fairness.backupWeight
+  );
 }
 
 export function calculateBenefitScore(primary: number, backup: number): number {
-  return primary * 1 + backup * 0.5;
+  return (
+    primary * parkingConfig.benefitScore.primaryWeight +
+    backup * parkingConfig.benefitScore.backupWeight
+  );
 }
 
 export function isHoliday(date: Date): boolean {
   const month = date.getMonth() + 1; // 1-based
   const day = date.getDate();
-  return holidays.some((h) => h.month === month && h.day === day);
+  return parkingConfig.holidays.some((h) => h.month === month && h.day === day);
 }
 
 export function getHolidayName(date: Date): string | null {
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const holiday = holidays.find((h) => h.month === month && h.day === day);
+  const holiday = parkingConfig.holidays.find(
+    (h) => h.month === month && h.day === day,
+  );
   return holiday ? holiday.holidayName : null;
 }
 

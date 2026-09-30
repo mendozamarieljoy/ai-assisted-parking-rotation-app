@@ -9,7 +9,7 @@ import {
 } from "./types";
 import { generateSchedule } from "./scheduler";
 import { calculateFairnessScore, calculateBenefitScore } from "./utils";
-import { usersList } from "./constants";
+import { parkingConfig, usersList } from "./config";
 
 interface ParkingState {
   schedule: DaySchedule[];
@@ -25,9 +25,6 @@ interface ParkingState {
   skipPrimary: (date: string, slot: Slot) => void;
   filterByUsers: (users: string[]) => void;
 }
-
-const COST_PER_SLOT = 50;
-const OUTSIDE_PARKING_COST = 100; // assume
 
 function calculateUserStats(
   schedule: DaySchedule[],
@@ -69,7 +66,8 @@ function calculateCostStats(
   userStats: Record<string, UserStats>,
 ): Record<string, CostStats> {
   const totalSlots = schedule.length * 3;
-  const costPerUser = (totalSlots * COST_PER_SLOT) / usersList.length;
+  const costPerUser =
+    (totalSlots * parkingConfig.costSimulation.costPerSlot) / usersList.length;
 
   const costStats: Record<string, CostStats> = {};
   usersList.forEach((user) => {
@@ -80,7 +78,10 @@ function calculateCostStats(
     );
     const estimatedCost = costPerUser;
     const savings =
-      OUTSIDE_PARKING_COST * (stats.primaryCount + stats.backupCount * 0.5) -
+      parkingConfig.costSimulation.outsideParkingCost *
+        (stats.primaryCount +
+          stats.backupCount *
+            parkingConfig.costSimulation.backupValueMultiplier) -
       estimatedCost;
     costStats[user] = {
       estimatedCost,

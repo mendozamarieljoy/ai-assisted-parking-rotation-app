@@ -1,4 +1,4 @@
-import { primaryUserColor } from "@/lib/constants";
+import { getUserColors } from "@/lib/config";
 import { getUsers } from "@/lib/helper";
 import { useParkingStore } from "@/lib/store";
 
@@ -25,10 +25,15 @@ export default function FilterByUser() {
       <div className="flex flex-wrap gap-2 md:gap-4">
         {users.map((user) => {
           const isUserFiltered = filteredUsers.includes(user);
+          const colors = getUserColors(user);
           return (
             <button
               key={user}
-              className={`${isUserFiltered ? "" : "opacity-20"} ${primaryUserColor[user]} bg-current text-xs px-4 py-2 rounded-xl`}
+              className={`${isUserFiltered ? "" : "opacity-20"} bg-current text-xs px-4 py-2 rounded-xl`}
+              style={{
+                backgroundColor: colors.text,
+                borderColor: colors.border,
+              }}
               onClick={() => onHandleClick(isUserFiltered, user)}
             >
               <span className="text-white">{user}</span>

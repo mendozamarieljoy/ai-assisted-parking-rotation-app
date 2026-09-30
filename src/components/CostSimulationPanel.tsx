@@ -1,6 +1,7 @@
 "use client";
 
 import { getUsers } from "@/lib/helper";
+import { parkingConfig } from "@/lib/config";
 import { useParkingStore } from "@/lib/store";
 
 export default function CostSimulationPanel() {
@@ -11,7 +12,7 @@ export default function CostSimulationPanel() {
   return (
     <div className="w-full bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">
-        Cost Simulation (₱50/slot/day)
+        Cost Simulation (₱{parkingConfig.costSimulation.costPerSlot}/slot/day)
       </h2>
       <div className="grid lg:grid-cols-3 gap-4">
         {users.map((user) => {

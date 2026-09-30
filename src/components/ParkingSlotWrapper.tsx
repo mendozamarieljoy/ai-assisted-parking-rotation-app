@@ -6,6 +6,7 @@ import utc from "dayjs/plugin/utc";
 import { Fragment } from "react/jsx-runtime";
 import ParkingSlot from "./ParkingSlot";
 import { getHolidayName, isHoliday } from "@/lib/utils";
+import { parkingConfig } from "@/lib/config";
 
 export default function ParkingSlotWrapper({
   date,
@@ -18,7 +19,7 @@ export default function ParkingSlotWrapper({
   const getScheduleForDate = (date: Date): DaySchedule | undefined => {
     dayjs.extend(utc);
     dayjs.extend(timezone);
-    const dateStr = dayjs(date).tz("Asia/Manila").format("YYYY-MM-DD");
+    const dateStr = dayjs(date).tz(parkingConfig.timezone).format("YYYY-MM-DD");
     return schedule.find((s) => s.date === dateStr);
   };
 

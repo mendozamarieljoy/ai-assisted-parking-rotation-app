@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { parkingConfig } from "@/lib/config";
 
 dayjs.extend(duration);
 
 export default function ParkingFeeTimeCalculator() {
+  const { baseHours, baseFee, extraFeePerHour } = parkingConfig.parkingFee;
   const [timeIn, setTimeIn] = useState("08:00");
   const [timeOut, setTimeOut] = useState("11:30");
 
@@ -21,23 +23,22 @@ export default function ParkingFeeTimeCalculator() {
 
     const hours = end.diff(start, "minute") / 60;
 
-    const baseHours = Math.min(3, hours);
-    const extraHours = Math.max(0, hours - 3);
+    const chargedBaseHours = Math.min(baseHours, hours);
+    const extraHours = Math.max(0, hours - baseHours);
 
-    const baseFee = 50;
-    const extraFee = Math.ceil(extraHours) * 20;
+    const extraFee = Math.ceil(extraHours) * extraFeePerHour;
 
     const total = baseFee + extraFee;
 
     return {
       hours,
-      baseHours,
+      baseHours: chargedBaseHours,
       extraHours,
       total,
       start,
       end,
     };
-  }, [timeIn, timeOut]);
+  }, [baseFee, baseHours, extraFeePerHour, timeIn, timeOut]);
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white px-4 py-3 space-y-3">
@@ -78,15 +79,18 @@ export default function ParkingFeeTimeCalculator() {
             <p>{result.hours.toFixed(2)} hrs</p>
           </div>
           <div className="flex justify-between items-center">
-            <p>Base (first 3 hours)</p>
-            <p>₱50</p>
+            <p>Base (first {baseHours} hours)</p>
+            <p>₱{baseFee}</p>
           </div>
           <div className="flex justify-between items-center">
             <p>
               Extra hours(
-              {Math.max(0, Math.ceil(result.extraHours)).toFixed(2)} hr × ₱20)
+              {Math.max(0, Math.ceil(result.extraHours)).toFixed(2)} hr × ₱
+              {extraFeePerHour})
             </p>
-            <p>₱{Math.max(0, Math.ceil(result.extraHours)) * 20}</p>
+            <p>
+              ₱{Math.max(0, Math.ceil(result.extraHours)) * extraFeePerHour}
+            </p>
           </div>
           <div className="flex justify-between items-center font-bold border-t border-zinc-800 pt-2 mt-2">
             <p>Total Fee</p>

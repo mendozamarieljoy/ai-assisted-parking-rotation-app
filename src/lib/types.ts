@@ -1,6 +1,6 @@
-import { usersList } from "./constants";
+import type { User } from "./config";
 
-export type User = (typeof usersList)[number];
+export type { User } from "./config";
 
 export type Slot = "332" | "27" | "28";
 

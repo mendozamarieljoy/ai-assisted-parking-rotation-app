@@ -4,8 +4,21 @@ import ParkingFeeTimeCalculator from "@/components/ParkingFeeByTimeCalculator";
 import ParkingFeeCalculator from "@/components/ParkingFeeCalculator";
 import SwapTimeCalculator from "@/components/SwapTimeCalculator";
 import Link from "next/link";
+import dayjs from "dayjs";
+import { parkingConfig } from "@/lib/config";
 
 export default function Guidelines() {
+  const {
+    maxPayParkingHours,
+    suggestedSwapBufferMinutes,
+    samplePayParkingArrivalTime,
+  } = parkingConfig.swapGuidance;
+  const sampleArrival = dayjs(`2026-01-01 ${samplePayParkingArrivalTime}`);
+  const sampleDeadline = sampleArrival.add(maxPayParkingHours, "hour");
+  const sampleSuggestedSwap = sampleDeadline
+    .subtract(suggestedSwapBufferMinutes, "minute")
+    .format("h:mm A");
+
   return (
     <>
       <div className="sticky top-22.25 md:hidden bg-zinc-100 flex items-center gap-2 p-2 shadow">
@@ -63,11 +76,13 @@ export default function Guidelines() {
                 </li>
                 <li>
                   • Afternoon Shift: Park in pay parking first, then swap with
-                  the morning shift before reaching 3 hours in pay parking.
+                  the morning shift before reaching {maxPayParkingHours} hours
+                  in pay parking.
                 </li>
                 <li>
                   • Afternoon shift must inform the morning shift in advance
-                  about the exact swap time (before 3 hours limit).
+                  about the exact swap time (before the {maxPayParkingHours}
+                  -hour limit).
                 </li>
               </ul>
             </div>
@@ -88,8 +103,10 @@ export default function Guidelines() {
                   </span>
                   , not a strict rule. The goal is to help users minimize pay
                   parking cost, ideally around{" "}
-                  <span className="font-medium">₱50 per use</span> whenever
-                  possible through proper coordination.
+                  <span className="font-medium">
+                    ₱{parkingConfig.parkingFee.baseFee} per use
+                  </span>{" "}
+                  whenever possible through proper coordination.
                 </div>
               </div>
 
@@ -102,13 +119,15 @@ export default function Guidelines() {
 
                 <p>
                   <span className="font-medium text-zinc-800">User 2:</span>{" "}
-                  Arrives 11:30 AM — parks in pay parking
+                  Arrives {sampleArrival.format("h:mm A")} — parks in pay
+                  parking
                 </p>
 
                 <p className="text-zinc-500">
-                  ⏱ Rule: Swap must happen before 3-hour limit →{" "}
+                  ⏱ Rule: Swap must happen before {maxPayParkingHours}-hour
+                  limit →{" "}
                   <span className="font-medium text-zinc-700">
-                    2:30 PM deadline
+                    {sampleDeadline.format("h:mm A")} deadline
                   </span>
                 </p>
               </div>
@@ -119,7 +138,8 @@ export default function Guidelines() {
               <div className="space-y-2 text-zinc-600 leading-relaxed">
                 <p>
                   1. User 2 tells User 1 the proposed swap time (e.g. “Let’s
-                  swap at 2:00 PM” — must be before 2:30 PM)
+                  swap at {sampleSuggestedSwap}” — must be before{" "}
+                  {sampleDeadline.format("h:mm A")})
                 </p>
 
                 <p>2. User 1 confirms the swap time</p>

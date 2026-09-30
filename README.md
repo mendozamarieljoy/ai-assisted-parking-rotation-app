@@ -24,6 +24,10 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Parking configuration
+
+Static parking data and settings live in `src/data/parking-config.json`, including the roster, availability, holidays, colors, fee assumptions, and scheduling rules. The app imports this file at build time; changes require a rebuild and redeployment. It does not provide runtime editing or backend storage.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

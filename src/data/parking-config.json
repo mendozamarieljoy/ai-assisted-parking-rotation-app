@@ -1,0 +1,146 @@
+{
+  "timezone": "Asia/Manila",
+  "users": {
+    "Reubs": {
+      "showInFilter": true,
+      "unavailableWeekdays": [2],
+      "colors": { "border": "#6366f1", "text": "#4338ca" }
+    },
+    "Nes": {
+      "showInFilter": true,
+      "unavailableWeekdays": [3],
+      "colors": { "border": "#10b981", "text": "#047857" }
+    },
+    "Mariel": {
+      "showInFilter": true,
+      "unavailableWeekdays": [5],
+      "colors": { "border": "#ec4899", "text": "#be185d" }
+    },
+    "Raph": {
+      "showInFilter": true,
+      "unavailableWeekdays": [],
+      "colors": { "border": "#f59e0b", "text": "#b45309" }
+    },
+    "Lady": {
+      "showInFilter": true,
+      "unavailableWeekdays": [],
+      "colors": { "border": "#d946ef", "text": "#a21caf" }
+    },
+    "Marvs": {
+      "showInFilter": true,
+      "unavailableWeekdays": [],
+      "colors": { "border": "#8b5cf6", "text": "#6d28d9" }
+    },
+    "Erwin": {
+      "showInFilter": false,
+      "unavailableWeekdays": [],
+      "colors": { "border": "#0ea5e9", "text": "#0369a1" }
+    }
+  },
+  "ownerColors": {
+    "border": "#cbd5e1",
+    "text": "#64748b",
+    "background": "#f1f5f9"
+  },
+  "holidays": [
+    { "month": 1, "day": 1, "holidayName": "New Year's Day" },
+    { "month": 4, "day": 9, "holidayName": "Araw ng Kagitingan" },
+    { "month": 5, "day": 1, "holidayName": "Labor Day" },
+    { "month": 5, "day": 27, "holidayName": "Eid'l Adha (Feast of Sacrifice)" },
+    { "month": 6, "day": 12, "holidayName": "Independence Day" },
+    { "month": 8, "day": 21, "holidayName": "Ninoy Aquino Day" },
+    { "month": 8, "day": 31, "holidayName": "National Heroes Day" },
+    { "month": 11, "day": 16, "holidayName": "49th ASEAN Summit" },
+    { "month": 11, "day": 17, "holidayName": "49th ASEAN Summit" },
+    { "month": 11, "day": 18, "holidayName": "49th ASEAN Summit" },
+    { "month": 12, "day": 25, "holidayName": "Christmas Day" },
+    { "month": 12, "day": 30, "holidayName": "Rizal Day" }
+  ],
+  "parkingFee": {
+    "baseHours": 3,
+    "baseFee": 50,
+    "extraFeePerHour": 20
+  },
+  "costSimulation": {
+    "costPerSlot": 50,
+    "outsideParkingCost": 100,
+    "backupValueMultiplier": 0.5
+  },
+  "benefitScore": {
+    "primaryWeight": 1,
+    "backupWeight": 0.5
+  },
+  "swapGuidance": {
+    "maxPayParkingHours": 3,
+    "suggestedSwapBufferMinutes": 10,
+    "samplePayParkingArrivalTime": "11:30"
+  },
+  "fairness": {
+    "primaryWeight": 2,
+    "backupWeight": 1,
+    "slot332Penalty": 1.5,
+    "compositeRangeWeight": 1000,
+    "primaryRangeWeight": 100,
+    "backupRangeWeight": 10,
+    "slot332RangeWeight": 1
+  },
+  "scheduler": {
+    "rules": [
+      {
+        "slots": ["27", "28"],
+        "forbiddenPairs": [["Nes", "Raph"]]
+      },
+      {
+        "slots": ["27", "28"],
+        "weekdays": [0, 1, 2, 3, 4],
+        "forbiddenPairs": [["Nes", "Marvs"], ["Raph", "Marvs"]]
+      },
+      {
+        "slots": ["27", "28"],
+        "weekdays": [5],
+        "forbiddenPairs": [
+          ["Lady", "Marvs"],
+          ["Reubs", "Marvs"],
+          ["Erwin", "Marvs"]
+        ]
+      },
+      {
+        "slots": ["27", "28"],
+        "forbiddenPairs": [
+          ["Lady", "Reubs"],
+          ["Lady", "Erwin"],
+          ["Reubs", "Erwin"],
+          ["Mariel", "Reubs"]
+        ]
+      },
+      {
+        "slots": ["27", "28"],
+        "forbiddenPairs": [["Mariel", "Lady"]]
+      },
+      {
+        "slots": ["27", "28"],
+        "afterDateExclusive": "2026-05-19",
+        "forbiddenUsers": ["Erwin"]
+      },
+      {
+        "slots": ["27", "28"],
+        "dates": ["2026-05-20"],
+        "forbiddenUsers": ["Reubs"]
+      },
+      {
+        "slots": ["27", "28"],
+        "dates": ["2026-05-21"],
+        "forbiddenUsers": ["Nes"]
+      }
+    ],
+    "dateOverrides": [
+      {
+        "date": "2026-05-22",
+        "assignments": {
+          "27": { "primary": "Mariel", "backup": null },
+          "28": { "primary": "Marvs", "backup": null }
+        }
+      }
+    ]
+  }
+}
