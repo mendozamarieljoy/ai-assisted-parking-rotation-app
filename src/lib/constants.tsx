@@ -8,7 +8,7 @@ export const usersList = [
   "Erwin",
 ];
 
-export const removedUsers = ["Erwin"] // TODO: Remove entirely from codebase
+export const removedUsers = ["Erwin"]; // TODO: Remove entirely from codebase
 
 export const primaryUserColor: Record<string, string> = {
   Mariel: "border-pink-500 text-pink-700",
@@ -29,7 +29,9 @@ export const holidays = [
   { month: 6, day: 12, holidayName: "Independence Day" },
   { month: 8, day: 21, holidayName: "Ninoy Aquino Day" },
   { month: 8, day: 31, holidayName: "National Heroes Day" },
-  { month: 11, day: 30, holidayName: "Bonifacio Day" },
+  { month: 11, day: 16, holidayName: "49th ASEAN Summit" },
+  { month: 11, day: 17, holidayName: "49th ASEAN Summit" },
+  { month: 11, day: 18, holidayName: "49th ASEAN Summit" },
   { month: 12, day: 25, holidayName: "Christmas Day" },
   { month: 12, day: 30, holidayName: "Rizal Day" },
 
