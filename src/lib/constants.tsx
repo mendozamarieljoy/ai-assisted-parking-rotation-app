@@ -8,7 +8,7 @@ export const usersList = [
   "Erwin",
 ];
 
-export const removedUsers = ["Erwin"] // TODO: Remove entirely from codebase
+export const removedUsers = ["Erwin"]; // TODO: Remove entirely from codebase
 
 export const primaryUserColor: Record<string, string> = {
   Mariel: "border-pink-500 text-pink-700",
@@ -36,4 +36,24 @@ export const holidays = [
   // TO BE CONFIRMED - MOVING HOLIDAYS
   // { month: 3, day: 25, holidayName: "Maundy Thursday" },
   // { month: 3, day: 26, holidayName: "Good Friday" },
+];
+
+export const userMenusItems = [
+  { label: "Calendar", href: "/parking" },
+  { label: "Schedule Today", href: "/parking/today" },
+  { label: "Rules & Guidelines", href: "/parking/guidelines" },
+];
+
+export const notLoggedInMenuItems = [{ label: "Login", href: "/login" }];
+
+export const adminMenuItems = [
+  { label: "Dashboard", href: "/admin" },
+  { label: "Users", href: "/admin/users" },
+  { label: "Schedule", href: "/admin/schedule" },
+  { label: "Parking Spaces", href: "/admin/parking-spaces" },
+];
+
+export const accountMenuItems = [
+  { label: "Account", href: "/account" },
+  { label: "Logout", href: "/logout" },
 ];

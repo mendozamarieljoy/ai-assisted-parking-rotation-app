@@ -103,7 +103,7 @@ export default function Calendar() {
           <FilterByUser />
           <h2>{selectedYear}</h2>
         </div>
-        <div className="grid grid-cols-5 gap-4 min-w-400 max-w-full">
+        <div className="grid grid-cols-5 gap-4 min-w-[400px] max-w-full">
           {daysInWeek.map((day) => (
             <div
               key={day}

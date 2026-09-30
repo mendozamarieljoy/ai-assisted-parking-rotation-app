@@ -7,7 +7,7 @@ import CostSimulationPanel from "@/components/CostSimulationPanel";
 export default function ParkingPage() {
   return (
     <>
-      <div className="space-y-4 p-6">
+      <div className="space-y-4 p-6 max-w-3xl w-full">
         <Calendar />
         <div className="flex flex-wrap lg:grid grid-cols-2 gap-4 mb-4">
           <FairnessDashboard />

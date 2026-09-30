@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { holidays, usersList } from "./constants";
 import { User } from "./types";
 
@@ -89,4 +91,26 @@ export function getNext12Months(fromDate = new Date()): MonthOption[] {
   }
 
   return result;
+}
+
+// UI Helpers
+
+
+export function useOnClickOutside<T extends HTMLElement>(
+  ref: React.RefObject<T | null>,
+  handler: () => void
+) {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        handler();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, handler]);
 }

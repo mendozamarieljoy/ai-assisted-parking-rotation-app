@@ -3,6 +3,7 @@ import { Inter, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import AdminSidebar from "@/components/AdminSidebar";
 
 const sans = Inter({
   subsets: ["latin"],
@@ -24,6 +25,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isAdmin = false;
+
   return (
     <html
       lang="en"
@@ -31,9 +34,14 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <div className="min-h-screen flex flex-col bg-zinc-100">
-          <Header />
-          <div className="h-full">{children}</div>
-          <Footer />
+          <div className="flex-1 flex">
+            {isAdmin && <AdminSidebar />}
+            <div className="flex-1 flex flex-col">
+              <Header />
+              <div className="p-6">{children}</div>
+              <Footer />
+            </div>
+          </div>
         </div>
       </body>
     </html>

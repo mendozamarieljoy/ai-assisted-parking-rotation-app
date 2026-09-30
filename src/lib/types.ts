@@ -31,3 +31,8 @@ export type CostStats = {
   savings: number;
   benefitScore: number;
 };
+
+export type SVGType = {
+  size?: number;
+  fill?: string;
+};
